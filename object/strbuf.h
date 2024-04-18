@@ -17,9 +17,25 @@
 #define __strbuf_include__
 
 class Stringbuffer {
-public:
-	Stringbuffer(const Stringbuffer &copy) = delete; // prevent copying
-/* Add your code here */ 
+	public:
+			static const int BUFFER_SIZE = 256; // adjust this value as needed
+
+	private:
+			char buffer[BUFFER_SIZE];
+			int pos;
+			
+	public:
+		Stringbuffer(const Stringbuffer &copy) = delete; // prevent copying
+		Stringbuffer() : pos(0) {}
+
+		void put(char c) {
+				buffer[pos++] = c;
+				if (pos == BUFFER_SIZE) {
+						flush();
+				}
+		}
+
+	    virtual void flush() = 0; // pure virtual function
 };
 
 #endif

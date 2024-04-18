@@ -21,40 +21,93 @@
 
 #include "object/strbuf.h"
 
-class O_Stream
-/* Add your code here */ 
-{
-public:
-	O_Stream(const O_Stream &copy) = delete; // prevent copying
-/* Add your code here */ 
+enum NumberBase {
+    BIN,
+    OCT,
+    DEC,
+    HEX
 };
 
-/*---------------------------------------------------------------------------*/
-/*                                                                           */
-/*                          M A N I P U L A T O R S                          */
-/*                                                                           */
-/*---------------------------------------------------------------------------*/
-/* The functions below all receive and return a reference to an O_Stream     */
-/* object. Because class O_Stream defines an operator<< for functions with   */
-/* this signature, they can be called in this operator's implementation and  */
-/* even be embedded in a "stream" of outputs. A manipulator's task is to     */
-/* influence subsequent output, e.g. by switching to a different number      */
-/* system.                                                                   */
-/*---------------------------------------------------------------------------*/
-
-// ENDL: inserts a newline in the output and flushes the buffer
+class O_Stream : Stringbuffer
 /* Add your code here */ 
+{
+	private:
+    NumberBase base;
+	public:
+		O_Stream(const O_Stream &copy) = delete; // prevent copying
+    O_Stream() : base(DEC) {}
 
-// BIN: selects the binary number system
-/* Add your code here */ 
+    O_Stream& operator<< (unsigned char c) {
+        put(c);
+        return *this;
+    }
 
-// OCT: selects the octal number system
-/* Add your code here */ 
+    O_Stream& operator<< (char c) {
+        put(c);
+        return *this;
+    }
 
-// DEC: selects the decimal number system
-/* Add your code here */ 
+    // Implement the other operator<< overloads similarly
 
-// HEX: selects the hexadecimal number system
-/* Add your code here */ 
+    void flush() override {
+        // Implement this method in a derived class
+    }
 
+    void setBase(NumberBase base) {
+        this->base = base;
+    }
+
+    NumberBase getBase() const {
+        return base;
+    }
+	/* Add your code here */ 
+};
+
+	/*---------------------------------------------------------------------------*/
+	/*                                                                           */
+	/*                          M A N I P U L A T O R S                          */
+	/*                                                                           */
+	/*---------------------------------------------------------------------------*/
+	/* The functions below all receive and return a reference to an O_Stream     */
+	/* object. Because class O_Stream defines an operator<< for functions with   */
+	/* this signature, they can be called in this operator's implementation and  */
+	/* even be embedded in a "stream" of outputs. A manipulator's task is to     */
+	/* influence subsequent output, e.g. by switching to a different number      */
+	/* system.                                                                   */
+	/*---------------------------------------------------------------------------*/
+
+	// ENDL: inserts a newline in the output and flushes the buffer
+	/* Add your code here */ 
+O_Stream& endl(O_Stream& os) {
+    os.put('\n');
+    os.flush();
+    return os;
+}
+	// BIN: selects the binary number system
+	/* Add your code here */ 
+O_Stream& bin(O_Stream& os) {
+    os.setBase(BIN);
+    return os;
+}
+	// OCT: selects the octal number system
+	/* Add your code here */ 
+O_Stream& oct(O_Stream& os) {
+    os.setBase(OCT);
+    return os;
+}
+
+	// DEC: selects the decimal number system
+	/* Add your code here */ 
+O_Stream& dec(O_Stream& os) {
+    os.setBase(DEC);
+    return os;
+}
+
+	// HEX: selects the hexadecimal number system
+	/* Add your code here */ 
+
+O_Stream& hex(O_Stream& os) {
+    os.setBase(HEX);
+    return os;
+}
 #endif

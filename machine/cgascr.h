@@ -17,17 +17,93 @@
 
 class CGA_Screen {
 private:
-/* Add your code here */ 
 
+	static const int WIDTH = 80;
+	static const int HEIGHT = 25;
+	static const int VIDEO_MEMORY = 0xB8000;
+	int x;
+	int y;
+	char c;
+	unsigned char attrib;
+	IO_Port indexPort;
+	IO_Port dataPort;
+	
 public:
+	volatile char *video = (volatile char*)VIDEO_MEMORY;
+
 	CGA_Screen(const CGA_Screen &copy) = delete; // prevent copying
-	CGA_Screen()
-/* Add your code here */ 
-{}
+	CGA_Screen() : x(0), y(0), c('Z'), attrib(0), indexPort(0x3D4), dataPort(0x3D5) {
+		for (int row=0; row<WIDTH; row++){
+			for (int col=0; col<HEIGHT; col++){
+				show(row, col, ' ', 0x0F);
+			}
+		}
+		this->x = 0;
+		this->y = 0;
+	}
 
-/* Add your code here */ 
+	void show(int x, int y, char c, unsigned char attrib) {
+			if (c == '\n')
+			{
+				this->x = 0;
+				if (++this->y == HEIGHT)
+				{
+					this->y = 0;
+					shift_screen_up();
+				}
+				return;
+			}
+			video[(y * WIDTH + x) * 2] = c;
+			video[(y * WIDTH + x) * 2 + 1] = attrib;
+	}
+
+	void setpos(int x, int y) {
+			this->x = x;
+			this->y = y;
+	}
+
+	void getpos(int &x, int &y) {
+			x = this->x;
+			y = this->y;
+	}
+
+void print(char* text, int length, unsigned char attrib) {
+    for (int i = 0; i < length; ++i) {
+        if (text[i] == '\n') {
+            x = 0;
+            if (++y == HEIGHT) {
+                y = 0;
+                shift_screen_up();
+            }
+        } else {
+            show(x, y, text[i], attrib);
+            if (++x == WIDTH) {
+                x = 0;
+                if (++y == HEIGHT) {
+                    y = 0;
+                    shift_screen_up();
+                }
+            }
+        }
+    }
+}
+
+	public:
+		void shift_screen_up(){
+			// Copy every character in a temp variable, shift up by one index on the screen, and write the copied variable
+			for (int row = 0; row < HEIGHT - 1; row++) {
+				for (int col = 0; col < WIDTH; col++) {
+					char tempChar = video[((row + 1) * WIDTH + col) * 2];
+					unsigned char tempAttrib = video[((row + 1) * WIDTH + col) * 2 + 1];
+					show(col, row, tempChar, tempAttrib);
+				}
+			}
+
+			// Clear the last row
+			for (int col = 0; col < WIDTH; col++) {
+				show(col, HEIGHT - 1, ' ', 0x0F);
+			}
+	}
 };
-
-/* Add your code here */ 
 
 #endif
