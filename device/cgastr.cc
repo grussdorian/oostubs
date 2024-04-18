@@ -14,3 +14,8 @@
 #include "device/cgastr.h"
 
 /* Add your code here */ 
+void CGA_Stream::flush() {
+    // print(buffer, pos, attrib);
+    print(buffer, pos, 0x0F);
+    pos = 0;
+}

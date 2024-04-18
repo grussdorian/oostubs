@@ -24,15 +24,13 @@ private:
 	int x;
 	int y;
 	char c;
-	unsigned char attrib;
-	IO_Port indexPort;
-	IO_Port dataPort;
 	
 public:
+	unsigned char attrib;
 	volatile char *video = (volatile char*)VIDEO_MEMORY;
 
 	CGA_Screen(const CGA_Screen &copy) = delete; // prevent copying
-	CGA_Screen() : x(0), y(0), c('Z'), attrib(0), indexPort(0x3D4), dataPort(0x3D5) {
+	CGA_Screen() : x(0), y(0), c('A'), attrib(0x0F) {
 		for (int row=0; row<WIDTH; row++){
 			for (int col=0; col<HEIGHT; col++){
 				show(row, col, ' ', 0x0F);

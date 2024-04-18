@@ -19,3 +19,35 @@
 #include "object/o_stream.h"
 
 /* Add your code here */ 
+O_Stream& endl(O_Stream& os) {
+	os.put('\n');
+	os.flush();
+	return os;
+}
+// BIN: selects the binary number system
+/* Add your code here */ 
+O_Stream& bin(O_Stream& os) {
+	os.setBase(BIN);
+	return os;
+}
+	// OCT: selects the octal number system
+	/* Add your code here */ 
+O_Stream& oct(O_Stream& os) {
+    os.setBase(OCT);
+    return os;
+}
+
+	// DEC: selects the decimal number system
+	/* Add your code here */ 
+O_Stream& dec(O_Stream& os) {
+    os.setBase(DEC);
+    return os;
+}
+
+	// HEX: selects the hexadecimal number system
+	/* Add your code here */ 
+
+O_Stream& hex(O_Stream& os) {
+    os.setBase(HEX);
+    return os;
+}

@@ -20,6 +20,7 @@
 #define __o_stream_include__
 
 #include "object/strbuf.h"
+#include <cstdint>
 
 enum NumberBase {
     BIN,
@@ -28,7 +29,7 @@ enum NumberBase {
     HEX
 };
 
-class O_Stream : Stringbuffer
+class O_Stream : public Stringbuffer
 /* Add your code here */ 
 {
 	private:
@@ -47,7 +48,30 @@ class O_Stream : Stringbuffer
         return *this;
     }
 
-    // Implement the other operator<< overloads similarly
+		O_Stream& operator<< (unsigned short number){
+        put(number);
+        return *this;
+    }
+		O_Stream& operator<< (short number){
+        put(number);
+        return *this;
+    }
+		O_Stream& operator<< (unsigned int number){
+        put(number);
+        return *this;
+    }
+		O_Stream& operator<< (int number){
+        put(number);
+        return *this;
+    }
+		O_Stream& operator<< (unsigned long number){
+        put(number);
+        return *this;
+    }
+		O_Stream& operator<< (long number){
+        put(number);
+        return *this;
+    }
 
     void flush() override {
         // Implement this method in a derived class
@@ -60,7 +84,26 @@ class O_Stream : Stringbuffer
     NumberBase getBase() const {
         return base;
     }
-	/* Add your code here */ 
+		/* Add your code here */ 
+
+		O_Stream& operator<< (void* pointer) {
+			NumberBase oldBase = base;
+			base = HEX;
+			*this << reinterpret_cast<uintptr_t>(pointer);
+			base = oldBase;
+			return *this;
+		}
+
+		O_Stream& operator<< (char* text) {
+			while (*text) {
+				put(*text++);
+			}
+			return *this;
+		}
+
+    O_Stream& operator<< (O_Stream& (*fkt) (O_Stream&)) {
+        return fkt(*this);
+    }
 };
 
 	/*---------------------------------------------------------------------------*/
@@ -78,36 +121,13 @@ class O_Stream : Stringbuffer
 
 	// ENDL: inserts a newline in the output and flushes the buffer
 	/* Add your code here */ 
-O_Stream& endl(O_Stream& os) {
-    os.put('\n');
-    os.flush();
-    return os;
-}
-	// BIN: selects the binary number system
-	/* Add your code here */ 
-O_Stream& bin(O_Stream& os) {
-    os.setBase(BIN);
-    return os;
-}
-	// OCT: selects the octal number system
-	/* Add your code here */ 
-O_Stream& oct(O_Stream& os) {
-    os.setBase(OCT);
-    return os;
-}
+O_Stream& endl(O_Stream& os);
 
-	// DEC: selects the decimal number system
-	/* Add your code here */ 
-O_Stream& dec(O_Stream& os) {
-    os.setBase(DEC);
-    return os;
-}
+O_Stream& bin(O_Stream& os);
 
-	// HEX: selects the hexadecimal number system
-	/* Add your code here */ 
+O_Stream& oct(O_Stream& os);
 
-O_Stream& hex(O_Stream& os) {
-    os.setBase(HEX);
-    return os;
-}
+O_Stream& dec(O_Stream& os);
+
+O_Stream& hex(O_Stream& os);
 #endif

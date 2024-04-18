@@ -19,10 +19,8 @@
 class Stringbuffer {
 	public:
 			static const int BUFFER_SIZE = 256; // adjust this value as needed
-
-	private:
-			char buffer[BUFFER_SIZE];
 			int pos;
+			char buffer[BUFFER_SIZE];
 			
 	public:
 		Stringbuffer(const Stringbuffer &copy) = delete; // prevent copying
