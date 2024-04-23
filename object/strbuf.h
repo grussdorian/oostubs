@@ -30,6 +30,7 @@ class Stringbuffer {
 				buffer[pos++] = c;
 				if (pos == BUFFER_SIZE) {
 						flush();
+						// pos = 0;
 				}
 		}
 

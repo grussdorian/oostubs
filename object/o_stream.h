@@ -21,6 +21,7 @@
 
 #include "object/strbuf.h"
 #include <cstdint>
+#include <string.h>
 
 enum NumberBase {
     BIN,
@@ -35,7 +36,7 @@ class O_Stream : public Stringbuffer
 	private:
     NumberBase base;
 	public:
-		O_Stream(const O_Stream &copy) = delete; // prevent copying
+	O_Stream(const O_Stream &copy) = delete; // prevent copying
     O_Stream() : base(DEC) {}
 
     O_Stream& operator<< (unsigned char c) {
@@ -48,28 +49,94 @@ class O_Stream : public Stringbuffer
         return *this;
     }
 
-		O_Stream& operator<< (unsigned short number){
-        put(number);
+    void reverse(char str[], int length) {
+        int start = 0;
+        int end = length - 1;
+        while (start < end) {
+            char temp = str[start];
+            str[start] = str[end];
+            str[end] = temp;
+            end--;
+            start++;
+        }
+    }
+// Implementation of citoa()
+char* citoa(int num, char* str, int base) {
+    int i = 0;
+    bool isNegative = false;
+    int old_base = 10;
+    switch (base) {
+        case BIN: old_base = 2; break;
+        case OCT: old_base = 8; break;
+        case DEC: old_base = 10; break;
+        case HEX: old_base = 16; break;
+    }
+
+    if (num == 0) {
+        str[i++] = '0';
+        str[i] = '\0';
+        return str;
+    }
+
+    if (num < 0 && old_base == 10) {
+        isNegative = true;
+        num = -num;
+    }
+
+    while (num != 0) {
+        int rem = num % old_base;
+        if (base == HEX) {
+            str[i++] = (rem > 9) ? (rem - 10) + 'A' : rem + '0';
+        } else {
+            str[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
+        }
+        num = num / old_base;
+    }
+
+    if (isNegative)
+        str[i++] = '-';
+
+    str[i] = '\0';
+
+    reverse(str, i);
+
+    return str;
+}
+
+    O_Stream& operator<< (unsigned short number){
+        char buffer[32]; // Buffer to hold the number as a string
+        citoa(number, buffer, base); // Convert the number to a string
+        *this << buffer; // Output the string
         return *this;
     }
-		O_Stream& operator<< (short number){
-        put(number);
+    O_Stream& operator<< (short number){
+        char buffer[32]; // Buffer to hold the number as a string
+        citoa(number, buffer, base); // Convert the number to a string
+        *this << buffer; // Output the string
         return *this;
     }
-		O_Stream& operator<< (unsigned int number){
-        put(number);
+    O_Stream& operator<< (unsigned int number){
+        char buffer[32]; // Buffer to hold the number as a string
+        citoa(number, buffer, base); // Convert the number to a string
+        *this << buffer; // Output the string
         return *this;
     }
-		O_Stream& operator<< (int number){
-        put(number);
+    O_Stream& operator<< (int number){
+        char buffer[32]; // Buffer to hold the number as a string
+        citoa(number, buffer, base); // Convert the number to a string
+        *this << buffer; // Output the string
         return *this;
     }
-		O_Stream& operator<< (unsigned long number){
-        put(number);
+    O_Stream& operator<< (unsigned long number){
+        char buffer[32]; // Buffer to hold the number as a string
+        citoa(number, buffer, base); // Convert the number to a string
+        *this << buffer; // Output the string
         return *this;
     }
-		O_Stream& operator<< (long number){
-        put(number);
+    O_Stream& operator<< (long number){
+        char buffer[32]; // Buffer to hold the number as a string
+        citoa(number, buffer, base); // Convert the number to a string
+        *this << buffer; // Output the string
         return *this;
     }
 
@@ -86,20 +153,20 @@ class O_Stream : public Stringbuffer
     }
 		/* Add your code here */ 
 
-		O_Stream& operator<< (void* pointer) {
-			NumberBase oldBase = base;
-			base = HEX;
-			*this << reinterpret_cast<uintptr_t>(pointer);
-			base = oldBase;
-			return *this;
-		}
+    O_Stream& operator<< (void* pointer) {
+        NumberBase oldBase = base;
+        base = HEX;
+        *this << reinterpret_cast<uintptr_t>(pointer);
+        base = oldBase;
+        return *this;
+    }
 
-		O_Stream& operator<< (char* text) {
-			while (*text) {
-				put(*text++);
-			}
-			return *this;
-		}
+    O_Stream& operator<< (char* text) {
+        while (*text) {
+            put(*text++);
+        }
+        return *this;
+    }
 
     O_Stream& operator<< (O_Stream& (*fkt) (O_Stream&)) {
         return fkt(*this);
@@ -131,3 +198,5 @@ O_Stream& dec(O_Stream& os);
 
 O_Stream& hex(O_Stream& os);
 #endif
+
+
